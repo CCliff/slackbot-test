@@ -12,14 +12,10 @@ const PORT = process.env.PORT || 8080;
 // App
 const app = express();
 const slackBot = new SlackBotController();
-// app.get('/', (req, res) => {
-//   res.send('Hello world\n');
-// });
-
-// app.get('/slack', (req, res) => {
-//   console.log('Message from Slack: ',req);
-// });
+app.get('/', (req, res) => {
+  res.send('Hello world\n');
+});
 
 app.listen(PORT, function(){
-  // console.log(`Running on http://${HOST}:${PORT}`);
+  console.log(`Running on port: ${PORT}`);
 });
