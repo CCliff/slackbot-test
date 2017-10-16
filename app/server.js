@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const SlackBot = require('./SlackBot.js');
+const SlackBot = require('./slackBot.js').SlackBot;
 // Constants
 const PORT = process.env.PORT || 8080;
 

@@ -3,7 +3,7 @@ const RTM_EVENTS = require('@slack/client').RTM_EVENTS;
 const CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
 
 
-class SlackBot{
+class SlackBot {
   constructor() {
     this.bot_token = process.env.SLACK_BOT_TOKEN || 'xoxb-257203437157-T0QpzJifeBX09vs5kDwkVmBj';
     this.channel = '';
@@ -12,7 +12,7 @@ class SlackBot{
   }
 
   init() {
-    this.rtm = new RtmClient(bot_token);
+    this.rtm = new RtmClient(this.bot_token);
     this.setupEventHandlers();
 
     this.rtm.start();
