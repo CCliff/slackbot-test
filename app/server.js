@@ -1,7 +1,6 @@
 'use strict';
 
 const express = require('express');
-var Slack = require('@slack/client');
 
 // Constants
 const PORT = process.env.PORT || 8080;
