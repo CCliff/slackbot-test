@@ -18,6 +18,7 @@ app.get('/', (req, res) => {
 
 app.get('/slack', (req, res) => {
   console.log(req);
+  res.sendStatus(200);
 });
 
 app.listen(PORT, function(){
