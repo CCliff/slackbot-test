@@ -16,6 +16,10 @@ app.get('/', (req, res) => {
   res.send('Hello world\n');
 });
 
+app.get('/slack', (req, res) => {
+  console.log(req);
+});
+
 app.listen(PORT, function(){
   console.log(`Running on port: ${PORT}`);
 });

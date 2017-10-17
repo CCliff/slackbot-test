@@ -1,6 +1,8 @@
 const RtmClient = require('@slack/client').RtmClient;
+const WebClient = require('@slack/client').WebClient;
 const RTM_EVENTS = require('@slack/client').RTM_EVENTS;
 const CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
+
 
 const SlackRcvMessage = require('../models/slackRcvMessage.js').SlackRcvMessage;
 
@@ -14,6 +16,7 @@ class SlackBotController {
 
   init() {
     this.rtm = new RtmClient(this.bot_token);
+    this.web = new WebClient(this.bot_token);
     this.setupEventHandlers();
 
     this.rtm.start();
@@ -34,14 +37,59 @@ class SlackBotController {
   }
 
   connected() {
-    this.channels.forEach((channel) => {
-      this.sendMessage("I've been (re)started!", channel.id);
-    });
+
+    const attachments = JSON.stringify([
+      {
+        "text": "Someone is looking for you",
+        "callback_id": "reception",
+        "color": "#3AA3E3",
+        "attachment_type": "default",
+        "actions": [
+          {
+            "name": "response",
+            "text": "I'm on my way",
+            "type": "button",
+            "value": "go"
+          },
+          {
+            "name": "response",
+            "text": "Give me 5 minutes",
+            "type": "button",
+            "value": "minutes"
+          },
+          {
+            "name": "response",
+            "text": "Sorry, I can't make it",
+            "style": "danger",
+            "type": "button",
+            "value": "busy",
+            "confirm": {
+              "title": "Are you sure?",
+              "text": "Should we tell the visitor you are unavailable",
+              "ok_text": "Yes",
+              "dismiss_text": "No"
+            }
+          }
+        ]
+      }
+    ]);
+
+    const data ={
+        "as_user": true,
+        "attachments": attachments
+    };
+
+    for (const c of this.channels) {
+      this.web.chat.postMessage(c.id, '', data, () => {
+        console.log("callback");
+      });
+    }
+
   }
 
   receiveMessage(message) {
     const rcvMessage = new SlackRcvMessage(message);
-    this.sendShoutEcho(rcvMessage);
+    // this.sendShoutEcho(rcvMessage);
   }
 
   sendMessage(message, channel) {
