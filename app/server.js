@@ -1,16 +1,14 @@
 'use strict';
-
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').load();
 }
-//   Constants  //
-const PORT = process.env.PORT || 8080;
-//  /Constants  //
-
 const express    = require('express');
 const bodyParser = require("body-parser");
 
 const SlackBotController = require('./controllers/slackBotController.js').SlackBotController;
+
+//   Constants  //
+const PORT = process.env.PORT || 8080;
 
 //   App
 const app = express();
@@ -23,12 +21,16 @@ const slackBot = new SlackBotController();
 app.get('/', (req, res) => {
   res.send('Hello world\n');
 });
-
 app.post('/slack', (req, res) => {
   console.log(req.body);
   res.sendStatus(200);
 });
-//  /Routes  //
+app.get('/users', (req, res) => {
+  slackBot.getUsers().then((users) => {
+    res.send(users);
+  });
+});
+
 
 app.listen(PORT, function(){
   console.log(`Running on port: ${PORT}`);

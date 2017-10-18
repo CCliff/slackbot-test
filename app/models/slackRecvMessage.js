@@ -1,4 +1,4 @@
-class SlackRcvMessage {
+class SlackRecvMessage {
   constructor(message) {
     this.channel = message.channel;
     this.user = message.user;
@@ -8,4 +8,4 @@ class SlackRcvMessage {
   }
 }
 
-exports.SlackRcvMessage = SlackRcvMessage;
+exports.SlackRecvMessage = SlackRecvMessage;

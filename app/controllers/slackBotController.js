@@ -3,8 +3,9 @@ const WebClient = require('@slack/client').WebClient;
 const RTM_EVENTS = require('@slack/client').RTM_EVENTS;
 const CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS;
 
+const SlackRouter = require('./slackRouter.js').SlackRouter;
 
-const SlackRcvMessage = require('../models/slackRcvMessage.js').SlackRcvMessage;
+const SlackRecvMessage = require('../models/slackRecvMessage.js').SlackRecvMessage;
 
 class SlackBotController {
   constructor() {
@@ -17,6 +18,7 @@ class SlackBotController {
   init() {
     this.rtm = new RtmClient(this.bot_token);
     this.web = new WebClient(this.bot_token);
+    this.slackRouter = new SlackRouter();
     this.setupEventHandlers();
 
     this.rtm.start();
@@ -29,76 +31,55 @@ class SlackBotController {
   }
 
   authenticated(rtmStartData) {
+    // Find all the channels the bot is part of and add them to the list of channels
     for (const c of rtmStartData.channels) {
       if (c.is_member){
         this.channels.push(c);
       }
     }
+
+    // Find all the private channels (groups) the bot is part of and add them to the list of channels
+    // We do not need to check if the bot is a member of these groups; it only has returns the groups it is part of
+    for (const c of rtmStartData.groups) {
+      this.channels.push(c);
+    }
   }
 
   connected() {
-
-    const attachments = JSON.stringify([
-      {
-        "text": "Someone is looking for you",
-        "callback_id": "reception",
-        "color": "#3AA3E3",
-        "attachment_type": "default",
-        "actions": [
-          {
-            "name": "response",
-            "text": "I'm on my way",
-            "type": "button",
-            "value": "go"
-          },
-          {
-            "name": "response",
-            "text": "Give me 5 minutes",
-            "type": "button",
-            "value": "minutes"
-          },
-          {
-            "name": "response",
-            "text": "Sorry, I can't make it",
-            "style": "danger",
-            "type": "button",
-            "value": "busy",
-            "confirm": {
-              "title": "Are you sure?",
-              "text": "Should we tell the visitor you are unavailable",
-              "ok_text": "Yes",
-              "dismiss_text": "No"
-            }
-          }
-        ]
-      }
-    ]);
-
-    const data ={
-        "as_user": true,
-        "attachments": attachments
-    };
-
     for (const c of this.channels) {
-      this.web.chat.postMessage(c.id, '', data, () => {
-        console.log("callback");
-      });
+      console.log("Attached to", c.name);
     }
-
   }
 
   receiveMessage(message) {
-    const rcvMessage = new SlackRcvMessage(message);
-    // this.sendShoutEcho(rcvMessage);
+    // if this is a message from the bot, skip it.
+    if(message.bot_id){
+      return;
+    }
+    console.log('MESSAGE:', message);
+    const rcvMessage = new SlackRecvMessage(message);
+    const response = this.slackRouter.routeMessage(rcvMessage);
+    this.sendMessage(response);
   }
 
-  sendMessage(message, channel) {
-    this.rtm.sendMessage(message, channel);
+  sendMessage(response) {
+    console.log('RESPONSE:', response);
+    if (response) {
+      this.web.chat.postMessage(response.channel, response.text, response.data, response.callback);
+    }
   }
 
-  sendShoutEcho(rcvMessage) {
-    this.sendMessage(rcvMessage.text.toUpperCase(), rcvMessage.channel);
+  getUsers() {
+    return new Promise((resolve, reject) => {
+      const activeUsers = this.web.users.list().then((users) => {
+        return users.members.filter(member => !member.deleted);
+      });
+      resolve(activeUsers);
+      reject("Unable to reach Slack User API");
+    });
+
   }
 }
 
 exports.SlackBotController = SlackBotController;
+
