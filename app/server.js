@@ -3,9 +3,10 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').load();
 }
 const express    = require('express');
-const bodyParser = require("body-parser");
+const bodyParser = require('body-parser');
 
-const SlackBotController = require('./controllers/slackBotController.js').SlackBotController;
+const DataController = require('./controllers/dataController.js').DataController;
+const dataController = new DataController();
 
 //   Constants  //
 const PORT = process.env.PORT || 8080;
@@ -15,8 +16,6 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-const slackBot = new SlackBotController();
-
 //   Routes  //
 app.get('/', (req, res) => {
   res.send('Hello world\n');
@@ -25,9 +24,19 @@ app.post('/slack', (req, res) => {
   console.log(req.body);
   res.sendStatus(200);
 });
+app.get('/loadDBSlack', (req, res) => {
+  dataController.loadDBSlack().then((response) => {
+    res.send(response);
+  });
+});
 app.get('/users', (req, res) => {
-  slackBot.getUsers().then((users) => {
-    res.send(users);
+  dataController.getUsers(req.query).then((response) => {
+    res.send(response);
+  });
+});
+app.get('/clearData', (req, res) => {
+  dataController.clearData().then((response) => {
+    res.send(response);
   });
 });
 
