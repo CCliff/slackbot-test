@@ -5,7 +5,7 @@ const User = new UserModel(mongoose).model;
 
 class DBHelper {
   constructor() {
-    mongoose.connect(process.env.DB_URL);
+    mongoose.connect(process.env.MONGODB_URI);
 
     var db = mongoose.connection;
     db.on('error', console.error.bind(console, 'connection error:'));
