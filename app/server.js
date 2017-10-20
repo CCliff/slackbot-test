@@ -15,6 +15,12 @@ const PORT = process.env.PORT || 8080;
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'http://127.0.0.1:8081');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, DELETE, PUT, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  next();
+});
 
 //   Routes  //
 app.get('/', (req, res) => {
@@ -33,6 +39,10 @@ app.get('/users', (req, res) => {
   dataController.getUsers(req.query).then((response) => {
     res.send(response);
   });
+});
+app.patch('/users', (req, res) => {
+  console.log(req.body);
+  res.sendStatus(200);
 });
 app.get('/clearData', (req, res) => {
   dataController.clearData().then((response) => {

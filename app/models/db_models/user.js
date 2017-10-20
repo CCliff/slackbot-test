@@ -7,7 +7,7 @@ class UserModel {
   createModel() {
     const userSchema = this.mongoose.Schema({
       slackName: String,
-      slackId: String,
+      slackID: String,
       firstName: String,
       lastName: String,
       email: String
