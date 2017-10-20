@@ -63,7 +63,7 @@ class DataController {
               nameCharCode: rogerRoot(user.profile.first_name)
             });
           } catch(err) {
-            reject(console.error('ERROR:', err));
+            console.error('ERROR:', err);
           }
         });
         resolve("Slack users have been added to the DB");
