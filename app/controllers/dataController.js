@@ -53,7 +53,6 @@ class DataController {
     return new Promise((resolve, reject) => {
       slackBot.getUsers().then((users) => {
         users.forEach((user, i) => {
-          console.log(user);
           try {
             dbHelper.createUser({
               slackName: user.name,
@@ -63,8 +62,8 @@ class DataController {
               email: user.profile.email,
               nameCharCode: rogerRoot(user.profile.first_name)
             });
-          } catch(e) {
-            reject(console.log(user));
+          } catch(err) {
+            reject(console.error('ERROR:', err));
           }
         });
         resolve("Slack users have been added to the DB");
