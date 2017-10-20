@@ -1,5 +1,6 @@
 const mongoose  = require('mongoose');
 
+
 const UserModel      = require('../models/db_models/user.js').UserModel;
 const User = new UserModel(mongoose).model;
 
@@ -35,7 +36,40 @@ class DBHelper {
     return new Promise((resolve, reject) => {
       User.find(lowerOptions, (err, users) => {
         if(err) resolve(console.error(err));
+        if(users.length <= 1) {
+          users = users[0];
+        }
         resolve(users);
+      });
+    });
+  }
+
+  getUsersFuzzy(nameCharCode) {
+    return new Promise((resolve, reject) => {
+      const users = User.find((err, users) => {
+        if (err) reject(console.error(err));
+        const closeUsers = users.filter((user) => {
+          const difference = Math.abs(user.nameCharCode - nameCharCode);
+          if (difference <= 100) {
+            user.difference = difference;
+            return user;
+          }
+        });
+        closeUsers.sort((a, b) => {
+          return a.difference - b.difference;
+        });
+        resolve(closeUsers);
+      });
+    });
+  }
+
+  getUserByID(id) {
+    return new Promise((resolve, reject) => {
+      return User.findOne({
+        slackID: id
+      }, (err, user) => {
+        if(err){reject(err)};
+        resolve(user);
       });
     });
   }

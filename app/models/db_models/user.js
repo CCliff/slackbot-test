@@ -10,7 +10,8 @@ class UserModel {
       slackID: String,
       firstName: String,
       lastName: String,
-      email: String
+      email: String,
+      nameCharCode: String
     });
 
     return this.mongoose.model('User', userSchema);

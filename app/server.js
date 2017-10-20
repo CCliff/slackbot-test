@@ -35,14 +35,20 @@ app.get('/loadDBSlack', (req, res) => {
     res.send(response);
   });
 });
+app.get('/users-fuzzy', (req, res) => {
+  dataController.getUsersFuzzy(req.query.firstName).then((users) => {
+    res.send(users);
+  });
+});
 app.get('/users', (req, res) => {
   dataController.getUsers(req.query).then((response) => {
     res.send(response);
   });
 });
 app.patch('/users', (req, res) => {
-  console.log(req.body);
-  res.sendStatus(200);
+  dataController.updateUser(req.body).then((user) => {
+    res.send(user);
+  })
 });
 app.get('/clearData', (req, res) => {
   dataController.clearData().then((response) => {
