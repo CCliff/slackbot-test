@@ -33,6 +33,8 @@ app.post('/slack', (req, res) => {
 app.get('/loadDBSlack', (req, res) => {
   dataController.loadDBSlack().then((response) => {
     res.send(response);
+  }).catch((err) => {
+    console.error(err);
   });
 });
 app.get('/users-fuzzy', (req, res) => {
