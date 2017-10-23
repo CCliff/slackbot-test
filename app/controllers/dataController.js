@@ -32,8 +32,7 @@ class DataController {
 
   updateUser(data) {
     return new Promise((resolve, reject) => {
-      dbHelper.getUserByID(data.slackID).then((user) => {
-        console.log(user);
+      dbHelper.getUserBySlackID(data.slackID).then((user) => {
         if(user.length === 0) {
           reject("User not found");
         } else if(user.length > 1) {
@@ -45,6 +44,21 @@ class DataController {
             resolve(updatedUser);
           });
         }
+      });
+    });
+  }
+
+  deleteUser(data) {
+    return new Promise((resolve, reject) => {
+      console.log(data);
+      const slackID = data.slackID;
+      if(!slackID) {
+        reject('No slackID provided');
+      }
+      dbHelper.deleteUserBySlackID(slackID).then((results) => {
+        resolve(results);
+      }).catch((err) => {
+        reject(err);
       });
     });
   }
@@ -63,7 +77,7 @@ class DataController {
               nameCharCode: rogerRoot(user.profile.first_name)
             });
           } catch(err) {
-            console.error('ERROR:', err);
+            console.log('ERROR:', err);
           }
         });
         resolve("Slack users have been added to the DB");

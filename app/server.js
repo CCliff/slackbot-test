@@ -30,11 +30,12 @@ app.post('/slack', (req, res) => {
   console.log(req.body);
   res.sendStatus(200);
 });
-app.get('/loadDBSlack', (req, res) => {
+app.post('/loadDBSlack', (req, res) => {
   dataController.loadDBSlack().then((response) => {
-    res.send(response);
+    res.sendStatus(200);
   }).catch((err) => {
     console.error(err);
+    res.sendStatus(500);
   });
 });
 app.get('/users-fuzzy', (req, res) => {
@@ -51,6 +52,12 @@ app.patch('/users', (req, res) => {
   dataController.updateUser(req.body).then((user) => {
     res.send(user);
   })
+});
+app.delete('/users', (req, res) => {
+  dataController.deleteUser(req.query).then((user) => {
+    console.log(user);
+    res.send(user);
+  });
 });
 app.get('/clearData', (req, res) => {
   dataController.clearData().then((response) => {

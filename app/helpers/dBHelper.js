@@ -63,10 +63,21 @@ class DBHelper {
     });
   }
 
-  getUserByID(id) {
+  deleteUserBySlackID(slackID) {
+    return new Promise((resolve, reject) => {
+      const user = User.deleteOne({
+        slackID: slackID
+      }, (err, results) => {
+        if(err) {reject(err)};
+        resolve(results);
+      });
+    });
+  }
+
+  getUserBySlackID(slackID) {
     return new Promise((resolve, reject) => {
       return User.findOne({
-        slackID: id
+        slackID: slackID
       }, (err, user) => {
         if(err){reject(err)};
         resolve(user);
